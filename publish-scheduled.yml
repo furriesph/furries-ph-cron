@@ -1,0 +1,33 @@
+name: Publish Scheduled Posts
+
+# Runs every 15 minutes and publishes any post/guide whose scheduledPublishAt is in the past.
+#
+# HOST THIS WORKFLOW IN A SEPARATE PUBLIC GITHUB REPO (free for public repos).
+# Copy publish-scheduled.js into that repo's root and add secrets:
+#   SANITY_AUTH_TOKEN   — a Sanity write token (Settings → API → Tokens)
+#   CF_DEPLOY_HOOK_URL  — (optional) Cloudflare Pages deploy hook URL
+#
+# The script only calls Sanity's HTTP API — no checkout of your private CMS repo needed.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # every 15 minutes
+  workflow_dispatch:           # allow manual runs from the Actions tab
+
+jobs:
+  publish:
+    name: Publish scheduled documents
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4   # checks out THIS public repo (just the script)
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20          # Node 20 has built-in fetch, no npm install needed
+
+      - name: Run publish-scheduled script
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+          CF_DEPLOY_HOOK_URL: ${{ secrets.CF_DEPLOY_HOOK_URL }}
+        run: node publish-scheduled.js
