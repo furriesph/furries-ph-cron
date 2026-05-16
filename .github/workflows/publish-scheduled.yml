@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20          # Node 20 has built-in fetch, no npm install needed
+          node-version: 24          # Node 24 — required from June 2026 onwards
 
       - name: Run publish-scheduled script
         env:
