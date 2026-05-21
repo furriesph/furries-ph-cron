@@ -6,8 +6,8 @@
  * Also fires the Cloudflare Pages deploy hook if CF_DEPLOY_HOOK_URL is set.
  *
  * Required env vars:
- *   SANITY_AUTH_TOKEN   — Sanity write token
- *   CF_DEPLOY_HOOK_URL  — (optional) Cloudflare Pages deploy hook URL
+ *   SANITY_AUTH_TOKEN   - Sanity write token
+ *   CF_DEPLOY_HOOK_URL  - (optional) Cloudflare Pages deploy hook URL
  *
  * Run:
  *   node publish-scheduled.js

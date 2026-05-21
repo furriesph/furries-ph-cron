@@ -28,8 +28,8 @@ name: Publish Scheduled Posts
 # ────────────────────────────────────────────────────────────────────────────
 #
 # SECRETS NEEDED (Settings → Secrets → Actions in this repo):
-#   SANITY_AUTH_TOKEN   — a Sanity write token (Settings → API → Tokens)
-#   CF_DEPLOY_HOOK_URL  — (optional) Cloudflare Pages deploy hook URL
+#   SANITY_AUTH_TOKEN   - a Sanity write token (Settings → API → Tokens)
+#   CF_DEPLOY_HOOK_URL  - (optional) Cloudflare Pages deploy hook URL
 
 on:
   workflow_dispatch:           # triggered manually or by an external cron service
@@ -46,7 +46,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24          # Node 24 — required from June 2026 onwards
+          node-version: 24          # Node 24 - required from June 2026 onwards
 
       - name: Run publish-scheduled script
         env:
