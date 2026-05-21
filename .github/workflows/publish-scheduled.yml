@@ -1,18 +1,40 @@
 name: Publish Scheduled Posts
 
-# Runs every 15 minutes and publishes any post/guide whose scheduledPublishAt is in the past.
+# Runs every 5 minutes and publishes any post/guide whose scheduledPublishAt is in the past.
 #
-# HOST THIS WORKFLOW IN A SEPARATE PUBLIC GITHUB REPO (free for public repos).
-# Copy publish-scheduled.js into that repo's root and add secrets:
+# ── WHY GITHUB'S BUILT-IN SCHEDULE IS UNRELIABLE ────────────────────────────
+# GitHub's cron scheduler is best-effort and can be delayed by 30 min – 2 hrs
+# during peak periods. For reliable 5-minute execution, use an external cron
+# service to trigger this workflow via the GitHub API instead.
+#
+# ── RECOMMENDED: EXTERNAL TRIGGER VIA CRON-JOB.ORG (FREE) ──────────────────
+# 1. Go to https://cron-job.org and create a free account.
+# 2. Create a new cron job with these settings:
+#      URL:    https://api.github.com/repos/OWNER/REPO/actions/workflows/publish-scheduled.yml/dispatches
+#      Method: POST
+#      Headers:
+#        Authorization: Bearer YOUR_GITHUB_PAT
+#        Accept: application/vnd.github+json
+#        X-GitHub-Api-Version: 2022-11-28
+#        Content-Type: application/json
+#      Body:   {"ref":"main"}
+#      Schedule: Every 5 minutes
+# 3. Create a GitHub Personal Access Token (PAT) at
+#    https://github.com/settings/tokens with scope: workflow
+# 4. Disable or remove the `schedule:` block below once the external cron is
+#    confirmed working, to avoid duplicate runs.
+#
+# The GitHub cron below is kept as a fallback only.
+# ────────────────────────────────────────────────────────────────────────────
+#
+# SECRETS NEEDED (Settings → Secrets → Actions in this repo):
 #   SANITY_AUTH_TOKEN   — a Sanity write token (Settings → API → Tokens)
 #   CF_DEPLOY_HOOK_URL  — (optional) Cloudflare Pages deploy hook URL
-#
-# The script only calls Sanity's HTTP API — no checkout of your private CMS repo needed.
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'    # every 5 minutes (minimum GitHub allows)
-  workflow_dispatch:           # allow manual runs from the Actions tab
+  workflow_dispatch:           # triggered manually or by an external cron service
+  repository_dispatch:         # triggered via POST to /repos/.../dispatches
+    types: [publish-scheduled]
 
 jobs:
   publish:
