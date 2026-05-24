@@ -1,0 +1,42 @@
+name: Archive Expired Rego Events
+
+# Archives rego events whose end date has passed.
+# Runs every 30 minutes via an external trigger from cron-job.org.
+#
+# ── CRON-JOB.ORG SETUP ──────────────────────────────────────────────────────
+# Create a separate cron job at https://cron-job.org with these settings:
+#   URL:    https://api.github.com/repos/OWNER/REPO/actions/workflows/archive-expired-events.yml/dispatches
+#   Method: POST
+#   Headers:
+#     Authorization: Bearer YOUR_GITHUB_PAT
+#     Accept: application/vnd.github+json
+#     X-GitHub-Api-Version: 2022-11-28
+#     Content-Type: application/json
+#   Body:   {"ref":"main"}
+#   Schedule: Every 30 minutes
+#
+# SECRETS NEEDED (Settings → Secrets → Actions in this repo):
+#   CRON_SECRET   - shared secret for partners-api (wrangler secret put CRON_SECRET)
+# ────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [archive-expired-events]
+
+jobs:
+  archive:
+    name: Archive expired rego events
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Run archive-expired-events script
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: node archive-expired-events.js
