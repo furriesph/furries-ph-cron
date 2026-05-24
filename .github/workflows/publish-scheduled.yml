@@ -30,6 +30,7 @@ name: Publish Scheduled Posts
 # SECRETS NEEDED (Settings → Secrets → Actions in this repo):
 #   SANITY_AUTH_TOKEN   - a Sanity write token (Settings → API → Tokens)
 #   CF_DEPLOY_HOOK_URL  - (optional) Cloudflare Pages deploy hook URL
+#   CRON_SECRET         - shared secret for partners-api internal cron endpoints
 
 on:
   workflow_dispatch:           # triggered manually or by an external cron service
@@ -53,3 +54,19 @@ jobs:
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
           CF_DEPLOY_HOOK_URL: ${{ secrets.CF_DEPLOY_HOOK_URL }}
         run: node publish-scheduled.js
+
+  archive-expired-events:
+    name: Archive expired rego events
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Run archive-expired-events script
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: node archive-expired-events.js
