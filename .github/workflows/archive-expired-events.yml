@@ -39,4 +39,5 @@ jobs:
       - name: Run archive-expired-events script
         env:
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          PARTNERS_API_URL: ${{ secrets.PARTNERS_API_URL }}
         run: node archive-expired-events.js
