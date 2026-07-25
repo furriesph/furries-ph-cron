@@ -1,0 +1,2 @@
+#!/bin/sh
+node "../docs.furries.ph/scripts/require-update-log.mjs"
